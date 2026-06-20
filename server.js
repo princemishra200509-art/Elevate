@@ -119,7 +119,7 @@ app.post("/api/translate", async (req, res) => {
             }
           ],
           generationConfig: {
-            maxOutputTokens: 1024
+            maxOutputTokens: 4096
           }
         })
       }
