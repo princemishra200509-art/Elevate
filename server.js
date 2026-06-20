@@ -102,9 +102,9 @@ app.post("/api/translate", async (req, res) => {
   }
 
   try {
-    // Call Gemini API (free tier — Gemini 2.0 Flash)
+    // Call Gemini API (free tier — Gemini 2.5 Flash)
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -141,7 +141,7 @@ app.post("/api/translate", async (req, res) => {
       output_language,
       translated_output: parsed.translated_output,
       analysis: parsed.analysis,
-      model_used: "gemini-2.0-flash"
+      model_used: "gemini-2.5-flash"
     });
 
   } catch (err) {
