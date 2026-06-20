@@ -13,8 +13,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve index.html as static frontend
-app.use(express.static("public"));
+// Serve index.html as static frontend (root folder)
+app.use(express.static(__dirname));
 
 // ── Valid Options Matrix ──────────────────────────────────────
 const VALID_OPTIONS = [
