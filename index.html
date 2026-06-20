@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elevate — Language Elevation Engine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Root Variables ────────────────────────────── */
+    :root {
+      --bg:        #080812;
+      --surface:   #0f0f23;
+      --border:    rgba(255,255,255,0.08);
+      --purple:    #8b5cf6;
+      --blue:      #3b82f6;
+      --purple-lt: rgba(139,92,246,0.15);
+      --blue-lt:   rgba(59,130,246,0.12);
+      --text:      #f1f5f9;
+      --muted:     rgba(255,255,255,0.35);
+      --grad:      linear-gradient(135deg, #8b5cf6, #3b82f6);
+    }
+
+    /* ── Base ──────────────────────────────────────── */
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Ambient Background Glow ───────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse, rgba(139,92,246,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ────────────────────────────────────── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    /* ── Header ────────────────────────────────────── */
+    .header { text-align: center; margin-bottom: 44px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--purple-lt);
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      color: var(--purple);
+      font-weight: 600;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(52px, 12vw, 88px);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 0%, #c4b5fd 40%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -2px;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Card ──────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Language Selector Row ─────────────────────── */
+    .lang-row {
+      display: grid;
+      grid-template-columns: 1fr 44px 1fr;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    .lang-group label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .lang-group.from label { color: var(--purple); }
+    .lang-group.to   label { color: var(--blue); }
+
+    .lang-select {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b5cf6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      transition: border-color 0.2s;
+    }
+
+    .lang-select:focus { border-color: var(--purple); }
+    .lang-select option, .lang-select optgroup { background: #0f0f23; }
+
+    /* ── Swap Button ───────────────────────────────── */
+    .swap-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--purple-lt);
+      border: 1px solid rgba(139,92,246,0.3);
+      color: var(--purple);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .swap-btn:hover {
+      background: rgba(139,92,246,0.25);
+      transform: rotate(180deg);
+    }
+
+    /* ── Divider ───────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 -28px 20px;
+    }
+
+    /* ── Textarea ──────────────────────────────────── */
+    .textarea-wrap { position: relative; margin-bottom: 16px; }
+
+    textarea {
+      width: 100%;
+      padding: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      resize: vertical;
+      min-height: 130px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus { border-color: rgba(139,92,246,0.4); }
+    textarea::placeholder { color: rgba(255,255,255,0.2); }
+
+    .char-count {
+      position: absolute;
+      bottom: 10px; right: 14px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── Translate Button ──────────────────────────── */
+    .translate-btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      border: none;
+      background: var(--grad);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .translate-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(139,92,246,0.35);
+    }
+
+    .translate-btn:disabled {
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.3);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Loading Bar ───────────────────────────────── */
+    .loading-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 14px;
+      display: none;
+    }
+
+    .loading-bar.active { display: block; }
+
+    .loading-bar::after {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 40%;
+      background: var(--grad);
+      border-radius: 2px;
+      animation: slide 1.1s ease-in-out infinite;
+    }
+
+    @keyframes slide {
+      0%   { transform: translateX(-150%); }
+      100% { transform: translateX(400%); }
+    }
+
+    /* ── Result Card ───────────────────────────────── */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .result-card.visible { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: rgba(139,92,246,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .result-lang-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      font-weight: 700;
+      color: var(--purple);
+      text-transform: uppercase;
+    }
+
+    .copy-btn {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(139,92,246,0.35);
+      background: transparent;
+      color: var(--purple);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover { background: var(--purple-lt); }
+    .copy-btn.copied { color: #4ade80; border-color: rgba(74,222,128,0.4); }
+
+    .result-body {
+      padding: 22px 20px;
+      font-size: 17px;
+      line-height: 1.75;
+      color: #f1f5f9;
+      min-height: 70px;
+    }
+
+    .result-analysis {
+      padding: 12px 20px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      background: rgba(59,130,246,0.05);
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+
+    .result-analysis strong {
+      color: var(--blue);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-right: 6px;
+    }
+
+    /* ── Error Box ─────────────────────────────────── */
+    .error-box {
+      display: none;
+      padding: 14px 18px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 12px;
+      color: #fca5a5;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .error-box.visible { display: block; }
+
+    /* ── Footer ────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.15);
+      line-height: 1.8;
+    }
+
+    /* ── Mobile ────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .wrapper { padding: 24px 14px 50px; }
+      .card { padding: 20px 16px; }
+      .logo { font-size: 58px; }
+      .lang-row { grid-template-columns: 1fr 38px 1fr; gap: 7px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">✦ 22 Languages &nbsp;·&nbsp; 6 CEFR Levels</div>
+    <div class="logo">Elevate</div>
+    <p class="tagline">Transform any text across languages and mastery levels</p>
+  </div>
+
+  <!-- Main Card -->
+  <div class="card">
+
+    <!-- Language Selector Row -->
+    <div class="lang-row">
+
+      <!-- FROM -->
+      <div class="lang-group from">
+        <label>From</label>
+        <select id="inputLang" class="lang-select">
+          <optgroup label="── English Levels ──">
+            <option>A1 English</option>
+            <option>A2 English</option>
+            <option>B1 English</option>
+            <option>B2 English</option>
+            <option>C1 English</option>
+            <option>C2 English</option>
+          </optgroup>
+          <optgroup label="── Indian Languages ──">
+            <option selected>Hindi</option>
+            <option>Bengali</option>
+            <option>Marathi</option>
+            <option>Telugu</option>
+            <option>Tamil</option>
+            <option>Gujarati</option>
+            <option>Urdu</option>
+            <option>Kannada</option>
+            <option>Odia</option>
+            <option>Malayalam</option>
+            <option>Punjabi</option>
+            <option>Sanskrit</option>
+            <option>Assamese</option>
+            <option>Maithili</option>
+            <option>Santali</option>
+            <option>Kashmiri</option>
+            <option>Nepali</option>
+            <option>Konkani</option>
+            <option>Sindhi</option>
+            <option>Dogri</option>
+            <option>Manipuri</option>
+            <option>Bodo</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Swap -->
+      <button class="swap-btn" id="swapBtn" title="Swap languages">⇄</button>
+
+      <!-- TO -->
+      <div class="lang-group to">
+        <label>To</label>
+        <select id="outputLang" class="lang-select">
+          <optgroup label="── English Levels ──">
+            <option>A1 English</option>
+            <option>A2 English</option>
+            <option>B1 English</option>
+            <option>B2 English</option>
+            <option>C1 English</option>
+            <option selected>C2 English</option>
+          </optgroup>
+          <optgroup label="── Indian Languages ──">
+            <option>Hindi</option>
+            <option>Bengali</option>
+            <option>Marathi</option>
+            <option>Telugu</option>
+            <option>Tamil</option>
+            <option>Gujarati</option>
+            <option>Urdu</option>
+            <option>Kannada</option>
+            <option>Odia</option>
+            <option>Malayalam</option>
+            <option>Punjabi</option>
+            <option>Sanskrit</option>
+            <option>Assamese</option>
+            <option>Maithili</option>
+            <option>Santali</option>
+            <option>Kashmiri</option>
+            <option>Nepali</option>
+            <option>Konkani</option>
+            <option>Sindhi</option>
+            <option>Dogri</option>
+            <option>Manipuri</option>
+            <option>Bodo</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider"></div>
+
+    <!-- Input Textarea -->
+    <div class="textarea-wrap">
+      <textarea
+        id="inputText"
+        placeholder="Type or paste your text here..."
+        maxlength="2000"
+      ></textarea>
+      <span class="char-count" id="charCount">0 / 2000</span>
+    </div>
+
+    <!-- Translate Button -->
+    <button class="translate-btn" id="translateBtn" disabled>
+      ✦ &nbsp; Elevate
+    </button>
+
+    <!-- Loading Bar -->
+    <div class="loading-bar" id="loadingBar"></div>
+
+  </div><!-- /card -->
+
+  <!-- Error Box -->
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- Result Card -->
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <span class="result-lang-label" id="resultLangLabel">C2 English</span>
+      <button class="copy-btn" id="copyBtn">Copy</button>
+    </div>
+    <div class="result-body" id="resultBody"></div>
+    <div class="result-analysis" id="resultAnalysis"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    784 translation pairs &nbsp;·&nbsp; Powered by Claude AI<br/>
+    <span style="font-size:11px">Elevate — Language Elevation Engine</span>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+  // ── Element References ──────────────────────────────────────
+  const inputLang    = document.getElementById('inputLang');
+  const outputLang   = document.getElementById('outputLang');
+  const swapBtn      = document.getElementById('swapBtn');
+  const inputText    = document.getElementById('inputText');
+  const charCount    = document.getElementById('charCount');
+  const translateBtn = document.getElementById('translateBtn');
+  const loadingBar   = document.getElementById('loadingBar');
+  const errorBox     = document.getElementById('errorBox');
+  const resultCard   = document.getElementById('resultCard');
+  const resultLangLabel = document.getElementById('resultLangLabel');
+  const resultBody   = document.getElementById('resultBody');
+  const resultAnalysis  = document.getElementById('resultAnalysis');
+  const copyBtn      = document.getElementById('copyBtn');
+
+  // ── Char Count & Button Enable ──────────────────────────────
+  inputText.addEventListener('input', () => {
+    const len = inputText.value.length;
+    charCount.textContent = `${len} / 2000`;
+    translateBtn.disabled = len === 0;
+    hideResult();
+  });
+
+  // ── Swap Languages ──────────────────────────────────────────
+  swapBtn.addEventListener('click', () => {
+    const temp = inputLang.value;
+    inputLang.value = outputLang.value;
+    outputLang.value = temp;
+    hideResult();
+  });
+
+  // ── Hide Result on Change ───────────────────────────────────
+  inputLang.addEventListener('change', hideResult);
+  outputLang.addEventListener('change', hideResult);
+
+  function hideResult() {
+    resultCard.classList.remove('visible');
+    errorBox.classList.remove('visible');
+  }
+
+  // ── Translate ───────────────────────────────────────────────
+  translateBtn.addEventListener('click', async () => {
+    const text = inputText.value.trim();
+    if (!text) return;
+
+    // UI: loading state
+    translateBtn.disabled = true;
+    translateBtn.textContent = 'Elevating...';
+    loadingBar.classList.add('active');
+    hideResult();
+
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input_text: text,
+          input_language: inputLang.value,
+          output_language: outputLang.value
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Translation failed.');
+      }
+
+      // Show result
+      resultLangLabel.textContent = outputLang.value.toUpperCase();
+      resultBody.textContent = data.translated_output;
+
+      if (data.analysis) {
+        resultAnalysis.innerHTML = `<strong>Analysis</strong>${data.analysis}`;
+        resultAnalysis.style.display = 'block';
+      } else {
+        resultAnalysis.style.display = 'none';
+      }
+
+      resultCard.classList.add('visible');
+
+    } catch (err) {
+      errorBox.textContent = err.message || 'Something went wrong. Please try again.';
+      errorBox.classList.add('visible');
+    } finally {
+      // Reset button
+      translateBtn.disabled = false;
+      translateBtn.innerHTML = '✦ &nbsp; Elevate';
+      loadingBar.classList.remove('active');
+    }
+  });
+
+  // ── Enter Key Shortcut ──────────────────────────────────────
+  inputText.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      if (!translateBtn.disabled) translateBtn.click();
+    }
+  });
+
+  // ── Copy Button ─────────────────────────────────────────────
+  copyBtn.addEventListener('click', () => {
+    const text = resultBody.textContent;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      copyBtn.textContent = '✓ Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy';
+        copyBtn.classList.remove('copied');
+      }, 2000);
+    });
+  });
+</script>
+</body>
+</html>
