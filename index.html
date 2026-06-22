@@ -477,9 +477,9 @@
       <textarea
         id="inputText"
         placeholder="Type or paste your text here..."
-        maxlength="2000"
+        maxlength="10000"
       ></textarea>
-      <span class="char-count" id="charCount">0 / 2000</span>
+      <span class="char-count" id="charCount">0 / 10000</span>
     </div>
 
     <!-- Translate Button -->
@@ -532,7 +532,7 @@
   // ── Char Count & Button Enable ──────────────────────────────
   inputText.addEventListener('input', () => {
     const len = inputText.value.length;
-    charCount.textContent = `${len} / 2000`;
+    charCount.textContent = `${len} / 10000`;
     translateBtn.disabled = len === 0;
     hideResult();
   });
