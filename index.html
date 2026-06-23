@@ -499,7 +499,10 @@
   <div class="result-card" id="resultCard">
     <div class="result-header">
       <span class="result-lang-label" id="resultLangLabel">C2 English</span>
-      <button class="copy-btn" id="copyBtn">Copy</button>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="copy-btn" id="speakBtn" title="Sun lo">🔊 Sun lo</button>
+        <button class="copy-btn" id="copyBtn">Copy</button>
+      </div>
     </div>
     <div class="result-body" id="resultBody"></div>
     <div class="result-analysis" id="resultAnalysis"></div>
@@ -625,6 +628,62 @@
         copyBtn.classList.remove('copied');
       }, 2000);
     });
+  });
+
+  // ── Language to BCP-47 code map (for TTS) ──────────────────
+  const LANG_CODE = {
+    'A1 English': 'en-US', 'A2 English': 'en-US', 'B1 English': 'en-US',
+    'B2 English': 'en-US', 'C1 English': 'en-US', 'C2 English': 'en-US',
+    'Hindi': 'hi-IN', 'Bengali': 'bn-IN', 'Marathi': 'mr-IN',
+    'Telugu': 'te-IN', 'Tamil': 'ta-IN', 'Gujarati': 'gu-IN',
+    'Urdu': 'ur-PK', 'Kannada': 'kn-IN', 'Odia': 'or-IN',
+    'Malayalam': 'ml-IN', 'Punjabi': 'pa-IN', 'Sanskrit': 'sa-IN',
+    'Assamese': 'as-IN', 'Maithili': 'hi-IN', 'Santali': 'hi-IN',
+    'Kashmiri': 'hi-IN', 'Nepali': 'ne-NP', 'Konkani': 'hi-IN',
+    'Sindhi': 'hi-IN', 'Dogri': 'hi-IN', 'Manipuri': 'hi-IN', 'Bodo': 'hi-IN'
+  };
+
+  const speakBtn = document.getElementById('speakBtn');
+  let isSpeaking = false;
+
+  // ── Text-to-Speech ──────────────────────────────────────────
+  speakBtn.addEventListener('click', () => {
+    const text = resultBody.textContent;
+    if (!text) return;
+
+    // Agar chal raha hai toh rok do
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      speakBtn.innerHTML = '🔊 Sun lo';
+      isSpeaking = false;
+      return;
+    }
+
+    // Language code detect karo
+    const langCode = LANG_CODE[outputLang.value] || 'en-US';
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langCode;
+    utterance.rate = 0.9;   // Thoda slow — clear sunayi de
+    utterance.pitch = 1.0;
+
+    // Speaking state
+    utterance.onstart = () => {
+      isSpeaking = true;
+      speakBtn.innerHTML = '⏹ Roko';
+    };
+
+    utterance.onend = () => {
+      isSpeaking = false;
+      speakBtn.innerHTML = '🔊 Sun lo';
+    };
+
+    utterance.onerror = () => {
+      isSpeaking = false;
+      speakBtn.innerHTML = '🔊 Sun lo';
+    };
+
+    window.speechSynthesis.speak(utterance);
   });
 </script>
 </body>
